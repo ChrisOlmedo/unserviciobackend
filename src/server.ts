@@ -4,11 +4,9 @@ import cors from "cors"
 import corsOptions from "./config/cors.config"
 import { OAuth2Client } from 'google-auth-library';
 
-/*
 import dotenv from 'dotenv'
-
 dotenv.config();
-*/
+
 const app = express()
 
 app.use(cors(corsOptions)) // Aplica el middleware de CORS
@@ -28,7 +26,7 @@ app.get('/api/test', (_, res) => {
 app.use('/api/routes', diaryRoutes)
 
 
-const CLIENT_ID = '701982506489-aadaa1oofo8p39ash6jqa1rrckvgl538.apps.googleusercontent.com';
+const CLIENT_ID = process.env.GOOGLE_AUTH_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
 
 app.post('/api/auth/google', async (req, res) => {
