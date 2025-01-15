@@ -7,8 +7,8 @@ router.get('/', (_req, res) => {
 }
 )
 
-router.get('/culo', (_req, res) => {
-    res.send('Que pedo con esto')
+router.get('/prueba', (_req, res) => {
+    res.send('Hola mundo desde aca')
 }
 )
 
