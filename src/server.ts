@@ -98,8 +98,6 @@ app.post('/api/auth/google', async (req, res) => {
     }
 });
 
-
-
 const PORT = process.env.PORT || 3000
 // Iniciar el servidor
 app.listen(PORT, () => {
