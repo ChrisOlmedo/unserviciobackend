@@ -5,7 +5,7 @@
         },
         {
             "src": "/(.*)",
-            "dest": "dist/server.js",
+            "dest": "/server.js",
             "status": 200
         }
     ]
