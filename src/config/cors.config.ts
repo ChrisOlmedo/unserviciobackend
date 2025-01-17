@@ -1,4 +1,3 @@
-
 import { CorsOptions } from "cors"
 
 const allowedOrigins = ['https://unservicio.com', 'http://localhost:5173']; // Lista de orígenes permitidos
