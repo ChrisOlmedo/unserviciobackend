@@ -17,7 +17,7 @@ const app = express()
 app.use(cors(corsOptions)) // Aplica el middleware de CORS
 app.use(express.json())
 
-
+connectDB();
 
 app.get('/', (_, res) => {
     res.send('This is the backend')
