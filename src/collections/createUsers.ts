@@ -1,8 +1,6 @@
 import connectDB from '../config/db.config';
-import User, { IUser } from '../models/userSchema';
+import User, { IUser } from '../models/userModel';
 import mongoose from 'mongoose';
-
-
 
 
 const main = async (dataUser: IUser) => {
