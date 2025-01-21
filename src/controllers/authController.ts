@@ -28,11 +28,15 @@ export const authGoogle = async (req: Request, res: Response) => {
             // Si alguna propiedad es undefined, lanzar un error o manejarlo
             throw new Error('Nombre o correo electrónico faltantes')
         }
+
+
         const user = await User.findOne({ email: email })
 
         if (user) {
+            console.log('Usuario existente')
             res.json(user.id)
         } else {
+            console.log('Usuario nuevo')
             const newId = `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
             const userData = {
                 "id": newId,

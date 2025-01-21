@@ -1,6 +1,5 @@
 import connectDB from '../config/db.config';
 import User, { IUser } from '../models/userModel';
-import mongoose from 'mongoose';
 
 
 const main = async (dataUser: IUser) => {
@@ -15,9 +14,6 @@ const main = async (dataUser: IUser) => {
         console.log('Documento insertado:', savedUser);
     } catch (error) {
         console.error('Error al insertar el documento:', error);
-    } finally {
-        // Cerrar la conexión
-        mongoose.connection.close();
     }
 };
 
