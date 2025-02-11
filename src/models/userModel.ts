@@ -5,7 +5,7 @@ export interface IUser {
     id: string;
     name: string;
     email: string;
-    role?: 'normal' | 'serviceprovider';
+    role?: 'user' | 'serviceprovider';
 }
 
 const UsersSchema: Schema = new Schema({
@@ -14,8 +14,8 @@ const UsersSchema: Schema = new Schema({
     email: { type: String, required: true },
     role: {
         type: String,
-        enum: ['normal', 'serviceprovider'],
-        default: 'normal',
+        enum: ['user', 'serviceprovider'],
+        default: 'user',
     },
 });
 

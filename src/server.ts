@@ -22,7 +22,9 @@ app.get('/api/test', (_, res) => {
     console.log('Solicitud recibida en /api/test')
     res.json({ message: 'Hola frontend, este es un mensaje desde el Backend' })
 })
-app.use('/api/routes', diaryRoutes)
+
+
+app.use('/api/routes', diaryRoutes)//Solo es un ejemplo
 app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)
 

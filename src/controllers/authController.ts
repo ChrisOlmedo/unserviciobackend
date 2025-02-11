@@ -1,12 +1,10 @@
 import { OAuth2Client } from 'google-auth-library'
 import { Request, Response } from 'express'
-import createUser from '../collections/createUsers'
-import User from '../models/userModel'
+import { IUser } from '../models/userModel'
+import { createUser, getUser } from '../services/userService'
 import dotenv from 'dotenv'
+import userFormatter from '../utils/userFormatter'
 dotenv.config();
-
-
-
 
 export const authGoogle = async (req: Request, res: Response) => {
 
@@ -29,22 +27,24 @@ export const authGoogle = async (req: Request, res: Response) => {
             throw new Error('Nombre o correo electrónico faltantes')
         }
 
-
-        const user = await User.findOne({ email: email })
+        const user = await getUser({ email: email });
 
         if (user) {
-            console.log('Usuario existente')
-            res.json(user.id)
+            res.json(userFormatter(user));
         } else {
             console.log('Usuario nuevo')
             const newId = `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
-            const userData = {
-                "id": newId,
-                "name": name,
-                "email": email,
+            const user: IUser = {
+                id: newId,
+                name: name,
+                email: email
             };
-            await createUser(userData);
-            res.json(newId)
+            const newUser = await createUser(user);
+            console.log('Usuario    creado:', newUser);
+            if (!newUser) {
+                throw new Error('Error al crear el usuario');
+            }
+            res.json(userFormatter(newUser));
         }
         // Retorna el ID y datos básicos al frontend
     } catch (error) {

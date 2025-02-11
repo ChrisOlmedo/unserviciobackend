@@ -4,6 +4,4 @@ const router = Express.Router()
 
 router.get('/getData/:idClient', getData)
 
-
-
 export default router;
