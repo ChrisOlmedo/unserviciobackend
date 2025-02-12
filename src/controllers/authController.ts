@@ -1,9 +1,9 @@
 import { OAuth2Client } from 'google-auth-library'
 import { Request, Response } from 'express'
-import { IUser } from '../models/userModel'
 import { createUser, getUser } from '../services/userService'
 import dotenv from 'dotenv'
 import userFormatter from '../utils/userFormatter'
+import jwt from "jsonwebtoken";
 dotenv.config();
 
 export const authGoogle = async (req: Request, res: Response) => {
@@ -30,25 +30,52 @@ export const authGoogle = async (req: Request, res: Response) => {
         const user = await getUser({ email: email });
 
         if (user) {
+            console.log('Usuario encontrado:', user);
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: "7d" });
+            // 🔹 Configurar cookie HTTP-Only
+            res.cookie("token", token, {
+                httpOnly: true,  // 🔒 Evita acceso desde JavaScript del frontend  
+                secure: false,  // 🔹 No usar HTTPS en desarrollo
+                sameSite: "lax",  // 🔹 "strict" puede bloquear cookies en localhost
+                /* Habilitar para produccion
+                secure: process.env.NODE_ENV === "production",  // Solo en HTTPS en producción
+                sameSite: "strict",  // Evita envío en solicitudes de otros sitios
+                // */
+                maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 días
+            });
+            console.log();
             res.json(userFormatter(user));
         } else {
             console.log('Usuario nuevo')
             const newId = `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
-            const user: IUser = {
-                id: newId,
+            const user = {
+                userId: newId,
                 name: name,
                 email: email
             };
             const newUser = await createUser(user);
-            console.log('Usuario    creado:', newUser);
+            console.log('Usuario creado:', newUser);
             if (!newUser) {
                 throw new Error('Error al crear el usuario');
             }
+            const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET!, { expiresIn: "7d" });
+
+            // 🔹 Configurar cookie HTTP-Only
+            res.cookie("token", token, {
+                httpOnly: true,  // 🔒 Evita acceso desde JavaScript del frontend  
+                secure: false,  // 🔹 No usar HTTPS en desarrollo
+                sameSite: "lax",  // 🔹 "strict" puede bloquear cookies en localhost
+                /* Habilitar para produccion
+                secure: process.env.NODE_ENV === "production",  // Solo en HTTPS en producción
+                sameSite: "strict",  // Evita envío en solicitudes de otros sitios
+                // */
+                maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 días
+            });
             res.json(userFormatter(newUser));
         }
         // Retorna el ID y datos básicos al frontend
     } catch (error) {
-        console.error('Error al verificar el token de Google:', error);
+        console.error('Error al verificar iniciar sesion con Google:', error);
         res.status(401).json({ message: 'Token inválido' });
     }
 };

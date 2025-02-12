@@ -1,0 +1,39 @@
+import { Request, Response } from 'express';
+import { createProvider, getProvider } from '../services/providerService';
+
+
+
+export const getDataProvider = async (req: Request, res: Response) => {
+    console.log('Solicitud recibida de proveedor')
+
+    const { slug } = req.params
+    console.log(slug)
+    try {
+        const provider = await getProvider({ slug: slug });
+        if (!provider) {
+            console.log('Proveedor no encontrado')
+            res.status(404).json({ message: 'Proveedor no encontrado' })
+            return;
+        }
+        console.log('Proveedor encontrado:', provider);
+        res.json(provider);
+    } catch (error) {
+        console.error('Error al obtener proveedor por ID:', error);
+        res.status(500).json({ message: 'Error al obtener proveedor por ID' });
+    }
+}
+
+export const createDataProvider = async (req: Request, res: Response) => {
+
+    console.log('Solicitud recibida en /api/provider');
+    const providerData = req.body;
+    console.log(providerData)
+    try {
+        const provider = await createProvider(providerData);
+        console.log('Proveedor creado:', provider);
+        res.json(provider);
+    } catch (error) {
+        console.error('Error al crear proveedor:', error);
+        res.status(500).json({ message: 'Error al crear proveedor' });
+    }
+}

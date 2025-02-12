@@ -1,18 +1,20 @@
-import { CorsOptions } from "cors"
+import { CorsOptions } from "cors";
 
-const allowedOrigins = ['https://unservicio.com', 'http://localhost:5173']; // Lista de orígenes permitidos
+
+const allowedOrigins = ['https://unservicio.com', 'http://localhost:5173'];
+
 const corsOptions: CorsOptions = {
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) {
-            // Permite la solicitud si el origen está en la lista o no tiene origen (e.g., herramientas locales)
             callback(null, true);
         } else {
-            // Bloquea la solicitud si el origen no está permitido
-            callback(new Error('No permitido por CORS'));
+            console.warn(`CORS bloqueado para: ${origin}`); // 🛑 Mensaje de advertencia en la consola
+            callback(null, false); // En lugar de un error, solo bloquea la petición
         }
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+    credentials: true, // Permitir envío de cookies y credenciales
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // ✅ Agregamos OPTIONS
+    allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-export default corsOptions
+export default corsOptions;

@@ -1,15 +1,15 @@
-import { getUser } from '../services/userService'
-import { Request, Response } from 'express'
+import User from '../models/userModel'
+import { Response } from 'express'
 import userFormatter from '../utils/userFormatter'
+import { AuthRequest } from '../middleware/authenticateToken'
 
-
-export const getData = async (req: Request, res: Response) => {
+export const getData = async (req: AuthRequest, res: Response) => {
     console.log('solicitud recibida de usuario')
 
-    const { idClient } = req.params
-    console.log(idClient)
+    const userId = req.userId;
+    console.log(userId)
     try {
-        const user = await getUser({ id: idClient });
+        const user = await User.findById(userId).select("-_id -__v");
         if (!user) {
             console.log('Usuario no encontrado')
             res.status(404).json({ message: 'Usuario no encontrado' })

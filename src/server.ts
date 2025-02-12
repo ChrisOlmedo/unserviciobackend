@@ -6,6 +6,7 @@ import cors from "cors"
 import corsOptions from "./config/cors.config"
 import dotenv from 'dotenv'
 import connectDB from "./config/db.config"
+import cookieParser from "cookie-parser";
 
 dotenv.config()
 const app = express()
@@ -14,6 +15,8 @@ connectDB();
 
 app.use(cors(corsOptions)) // Aplica el middleware de CORS
 app.use(express.json())
+app.use(cookieParser());
+
 
 app.get('/', (_, res) => {
     res.send('This is the backend')

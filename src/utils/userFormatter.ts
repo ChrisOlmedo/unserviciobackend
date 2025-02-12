@@ -1,21 +1,21 @@
-import { IUser } from '../models/userModel';
+import { IUser, IUserDocument } from '../models/userModel';
 
 
-interface IUserFormat extends IUser {
-    _id?: string;
-    __v?: number;
-}
+
 interface userFormatted {
-    id: string;
+    id: String;
     user: {
-        name: string;
-        email: string;
+        name: String;
+        email: String;
         role: 'user' | 'serviceprovider' | undefined;
     } | null;
 }
-const userFormatter = (user: IUserFormat): userFormatted => {
+const userFormatter = (user: IUserDocument | IUser): userFormatted => {
+    if (!user.userId) {
+        console.error('El usuario no tiene un ID');
+    }
     return {
-        id: user.id,
+        id: user.userId,
         user: {
             name: user.name,
             email: user.email,

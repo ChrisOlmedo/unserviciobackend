@@ -1,25 +1,35 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, Document, Model } from "mongoose";
 
-// Definir un esquema
+// Interfaz de usuario (sin Document)
 export interface IUser {
-    id: string;
+    userId: String;
     name: string;
     email: string;
-    role?: 'user' | 'serviceprovider';
+    role?: "user" | "serviceprovider";
 }
 
-const UsersSchema: Schema = new Schema({
-    id: { type: String, required: true },
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    role: {
-        type: String,
-        enum: ['user', 'serviceprovider'],
-        default: 'user',
+// Interfaz para documentos de MongoDB
+export interface IUserDocument extends IUser, Document { }
+
+// Definir el esquema de Mongoose
+const UsersSchema: Schema<IUserDocument> = new Schema(
+    {
+        userId: { type: String, unique: true, required: true },
+        name: { type: String, required: true },
+        email: { type: String, required: true, unique: true },
+        role: {
+            type: String,
+            enum: ["user", "serviceprovider"],
+            default: "user",
+        },
     },
-});
+    { timestamps: true } // Agrega createdAt y updatedAt automáticamente
+);
 
-// Crear un modelo
-const User = mongoose.model('Users', UsersSchema);
+// Crear el modelo tipado correctamente
+const UserModel: Model<IUserDocument> = mongoose.model<IUserDocument>(
+    "User",
+    UsersSchema
+);
 
-export default User;
+export default UserModel;
