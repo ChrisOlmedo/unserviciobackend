@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 import { createUser, getUser } from '../services/userService'
 import dotenv from 'dotenv'
 import userFormatter from '../utils/userFormatter'
-import jwt from "jsonwebtoken";
+import { setAuthCookie } from '../services/authCookies'
 dotenv.config();
 
 export const authGoogle = async (req: Request, res: Response) => {
@@ -31,18 +31,8 @@ export const authGoogle = async (req: Request, res: Response) => {
 
         if (user) {
             console.log('Usuario encontrado:', user);
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: "7d" });
-            // 🔹 Configurar cookie HTTP-Only
-            res.cookie("token", token, {
-                httpOnly: true,  // 🔒 Evita acceso desde JavaScript del frontend  
-                secure: false,  // 🔹 No usar HTTPS en desarrollo
-                sameSite: "lax",  // 🔹 "strict" puede bloquear cookies en localhost
-                /* Habilitar para produccion
-                secure: process.env.NODE_ENV === "production",  // Solo en HTTPS en producción
-                sameSite: "strict",  // Evita envío en solicitudes de otros sitios
-                // */
-                maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 días
-            });
+
+            setAuthCookie(res, user);
             console.log();
             res.json(userFormatter(user));
         } else {
@@ -58,19 +48,7 @@ export const authGoogle = async (req: Request, res: Response) => {
             if (!newUser) {
                 throw new Error('Error al crear el usuario');
             }
-            const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET!, { expiresIn: "7d" });
-
-            // 🔹 Configurar cookie HTTP-Only
-            res.cookie("token", token, {
-                httpOnly: true,  // 🔒 Evita acceso desde JavaScript del frontend  
-                secure: false,  // 🔹 No usar HTTPS en desarrollo
-                sameSite: "lax",  // 🔹 "strict" puede bloquear cookies en localhost
-                /* Habilitar para produccion
-                secure: process.env.NODE_ENV === "production",  // Solo en HTTPS en producción
-                sameSite: "strict",  // Evita envío en solicitudes de otros sitios
-                // */
-                maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 días
-            });
+            setAuthCookie(res, newUser);
             res.json(userFormatter(newUser));
         }
         // Retorna el ID y datos básicos al frontend

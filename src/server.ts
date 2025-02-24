@@ -1,7 +1,7 @@
 import express from "express"
-import diaryRoutes from "./routes/test"
-import authRoutes from './routes/authRoute'
+import authRoutes from './routes/authRoutes'
 import userRoutes from './routes/userRoutes'
+import providerRoutes from './routes/providerRoutes'
 import cors from "cors"
 import corsOptions from "./config/cors.config"
 import dotenv from 'dotenv'
@@ -27,9 +27,9 @@ app.get('/api/test', (_, res) => {
 })
 
 
-app.use('/api/routes', diaryRoutes)//Solo es un ejemplo
 app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)
+app.use('/api/provider', providerRoutes)
 
 const PORT = process.env.PORT || 3000
 

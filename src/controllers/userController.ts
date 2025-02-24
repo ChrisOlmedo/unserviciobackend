@@ -1,5 +1,5 @@
 import User from '../models/userModel'
-import { Response } from 'express'
+import { Request, Response } from 'express'
 import userFormatter from '../utils/userFormatter'
 import { AuthRequest } from '../middleware/authenticateToken'
 
@@ -23,3 +23,14 @@ export const getData = async (req: AuthRequest, res: Response) => {
         res.status(500).json({ message: 'Error al obtener usuario por ID' });
     }
 }
+
+export const logout = (_req: Request, res: Response) => {
+    res.clearCookie("token", {
+        httpOnly: true,  // Asegúrate de que no sea accesible desde el frontend
+        secure: process.env.NODE_ENV === "production",  // Solo en HTTPS en producción
+        sameSite: "lax",  // Para no bloquear la cookie en localhost
+        maxAge: 0,  // Expira inmediatamente
+    });
+
+    res.status(200).json({ message: "Sesión cerrada exitosamente" });
+};

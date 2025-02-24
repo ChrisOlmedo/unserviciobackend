@@ -9,3 +9,7 @@ export async function createProvider(providerData: IProvider) {
 export async function getProvider(filter: Record<string, any>) {
     return await Provider.findOne(filter);
 }
+
+export async function getProviders() {
+    return await Provider.find({}).select('_id name slug');
+}
