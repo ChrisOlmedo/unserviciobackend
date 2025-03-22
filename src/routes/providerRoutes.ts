@@ -4,9 +4,9 @@ import { authenticateToken } from '../middleware/authenticateToken';
 
 const router = Express.Router()
 
-router.get('/getProviders', getAllProviders);
-router.get('/getProvider/:slug', getDataProvider);
-router.put('/createProvider/:slug', authenticateToken, createNewProvider);
+router.get('/', getAllProviders);
+router.get('/:slug', getDataProvider);
+router.put('/:slug', authenticateToken, createNewProvider);
 
 
 export default router;

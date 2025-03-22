@@ -21,14 +21,13 @@ export interface IProvider extends Document {
 const ProviderSchema = new Schema<IProvider>(
     {
         userId: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Relación con el usuario
+        slug: { type: String, required: true, unique: true },
         enterpriseName: { type: String, required: true },
-        phone: { type: String, required: true },
-        typeService: { type: String, required: true },
-        location: { type: String, required: true },
-        rating: { type: Number, required: true, min: 0, max: 5 },
         logo: { type: String, required: true },
-        slug: { type: String, required: true, unique: true }, // Slug único para URL amigable
-
+        typeService: { type: String, required: true },
+        rating: { type: Number, required: true, min: 0, max: 5 },
+        phone: { type: String, required: true },
+        location: { type: String, required: true },
         providerPageData: {
             services: [{ type: String, required: true }],
             aboutMe: { type: String, required: true },

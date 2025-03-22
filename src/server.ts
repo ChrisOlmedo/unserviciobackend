@@ -28,8 +28,8 @@ app.get('/api/test', (_, res) => {
 
 
 app.use('/api/auth', authRoutes)
-app.use('/api/user', userRoutes)
-app.use('/api/provider', providerRoutes)
+app.use('/api/users', userRoutes)
+app.use('/api/providers', providerRoutes)
 
 const PORT = process.env.PORT || 3000
 
