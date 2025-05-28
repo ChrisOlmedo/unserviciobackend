@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
-import { createProvider, getProvider, getProviders } from '../services/providerService';
+import { createProvider, getProviderBySlug, getProviders } from '../services/providerService';
 
 
 
-export const getDataProvider = async (req: Request, res: Response) => {
+export const getProvider = async (req: Request, res: Response) => {
     console.log('Solicitud recibida de proveedor')
 
     const { slug } = req.params
     console.log(slug)
     try {
-        const provider = await getProvider({ slug });
+        const provider = await getProviderBySlug({ slug });
         if (!provider) {
             console.log('Proveedor no encontrado')
             res.status(404).json({ message: 'Proveedor no encontrado' })
@@ -22,6 +22,8 @@ export const getDataProvider = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error al obtener proveedor por ID' });
     }
 }
+
+
 export const getAllProviders = async (_: Request, res: Response) => {
     console.log('Solicitud recibida para pedir todos los proveedor')
 

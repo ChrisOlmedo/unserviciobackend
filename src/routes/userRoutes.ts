@@ -1,9 +1,12 @@
 import Express from "express"
-import { getData, logout } from '../controllers/userController'
+import { getData } from '../controllers/userController'
 import { authenticateToken } from '../middleware/authenticateToken';
 const router = Express.Router()
 
-router.get('/', authenticateToken, getData);
-router.post('/logout', logout);
+router.get('/me', authenticateToken, getData);
+router.put('/')
+router.delete('/')
+
+
 
 export default router;

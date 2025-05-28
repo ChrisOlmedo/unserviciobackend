@@ -6,7 +6,7 @@ export async function createProvider(providerData: IProvider) {
     return provider;
 }
 
-export async function getProvider(filter: Record<string, any>) {
+export async function getProviderBySlug(filter: Record<string, any>) {
     return await Provider.findOne(filter);
 }
 

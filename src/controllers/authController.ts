@@ -57,3 +57,15 @@ export const authGoogle = async (req: Request, res: Response) => {
         res.status(401).json({ message: 'Token inválido' });
     }
 };
+
+export const logout = (_req: Request, res: Response) => {
+    console.log('Solicitud recibida en /api/auth/logout');
+    res.clearCookie("token", {
+        httpOnly: true,  // Asegúrate de que no sea accesible desde el frontend
+        secure: process.env.NODE_ENV === "production",  // Solo en HTTPS en producción
+        sameSite: "lax",  // Para no bloquear la cookie en localhost
+        maxAge: 0,  // Expira inmediatamente
+    });
+
+    res.status(200).json({ message: "Sesión cerrada exitosamente" });
+};
