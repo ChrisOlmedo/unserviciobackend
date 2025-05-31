@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 import userFormatter from '../utils/userFormatter'
 import { AuthRequest } from '../middleware/authenticateToken'
 
-export const getData = async (req: AuthRequest, res: Response) => {
+export const getUser = async (req: AuthRequest, res: Response) => {
     console.log('solicitud recibida de usuario')
 
     const userId = req.userId;

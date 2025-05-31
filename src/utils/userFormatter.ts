@@ -1,16 +1,10 @@
 import { IUser, IUserDocument } from '../models/userModel';
 
-
-
-interface userFormatted {
-    user: {
-        name: string;
-        email: string;
-        role: 'user' | 'serviceprovider' | undefined;
-    } | null;
+export interface UserFormatted {
+    user: Pick<IUser, 'name' | 'email' | 'role'>;
 }
-const userFormatter = (user: IUserDocument | IUser): userFormatted => {
 
+const userFormatter = (user: IUserDocument | IUser): UserFormatted => {
     return {
         user: {
             name: user.name,
@@ -18,6 +12,6 @@ const userFormatter = (user: IUserDocument | IUser): userFormatted => {
             role: user.role
         }
     };
-}
+};
 
 export default userFormatter;

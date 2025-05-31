@@ -1,7 +1,7 @@
 import express from "express"
 import authRoutes from './routes/authRoutes'
 import userRoutes from './routes/userRoutes'
-import providerRoutes from './routes/providerRoutes'
+import serviceProviderRoutes from './routes/serviceProviderRoutes'
 import cors from "cors"
 import corsOptions from "./config/cors.config"
 import dotenv from 'dotenv'
@@ -29,7 +29,7 @@ app.get('/api/test', (_, res) => {
 
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
-app.use('/api/service_providers', providerRoutes)
+app.use('/api/service-providers', serviceProviderRoutes)
 
 const PORT = process.env.PORT || 3000
 
