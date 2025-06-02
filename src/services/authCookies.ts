@@ -4,7 +4,11 @@ import { CookieOptions } from "express";
 import { IUserDocument } from "../models/userModel";
 
 const generateToken = (user: IUserDocument): string => {
-    return jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: "7d" });
+    if (!user._id) throw new Error("User._id no está definido");
+    if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET no está definido en las variables de entorno");
+    return jwt.sign({ id: user._id.toString() }, process.env.JWT_SECRET!, {
+        expiresIn: "7d"
+    });
 };
 
 const generateCookieOptions = (): CookieOptions => ({

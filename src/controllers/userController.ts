@@ -1,12 +1,11 @@
 import User from '../models/userModel'
 import { Request, Response } from 'express'
 import userFormatter from '../utils/userFormatter'
-import { AuthRequest } from '../middleware/authenticateToken'
 
-export const getUser = async (req: AuthRequest, res: Response) => {
+export const getUser = async (req: Request, res: Response) => {
     console.log('solicitud recibida de usuario')
 
-    const userId = req.userId;
+    const userId = req.body.userId;
     console.log(userId)
     try {
         const user = await User.findById(userId).select("-_id -__v");

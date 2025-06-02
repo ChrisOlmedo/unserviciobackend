@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { createServiceProvider, getServiceProviderBySlug, getServiceProviders, getServiceProviderByUserId } from '../services/serviceProviderService';
 
+
 export const getPublicServiceProvider = async (req: Request, res: Response) => {
     console.log('Solicitud recibida de proveedor')
     const { slug } = req.params
@@ -56,15 +57,27 @@ export const getAllServiceProviders = async (_: Request, res: Response) => {
 }
 
 export const createNewServiceProvider = async (req: Request, res: Response) => {
-    console.log('Solicitud recibida en /api/provider');
-    const serviceProviderData = req.body;
-    console.log(serviceProviderData)
     try {
-        const serviceProvider = await createServiceProvider(serviceProviderData);
-        console.log('Proveedor creado:', serviceProvider);
-        res.json(serviceProvider);
+        const newProvider = await createServiceProvider(req.body, (req as any).userId);
+        res.status(201).json(newProvider);
     } catch (error) {
-        console.error('Error al crear proveedor:', error);
-        res.status(500).json({ message: 'Error al crear proveedor' });
+        console.error("Controller createServiceProvider error:", error);
+        res.status(500).json({ error: "No se pudo crear el proveedor" });
     }
 }
+/*
+export const updateServiceProviderController = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;       // ID del ServiceProvider en Mongo
+        const payload = req.body;        // payload ya procesado por el middleware
+        const userId = (req as any).user.id as string;
+
+        // (Opcional) chequear que userId coincide con dueño del ServiceProvider, etc.
+
+        const updated = await updateServiceProvider(id, payload);
+        return res.status(200).json(updated);
+    } catch (error) {
+        console.error("Controller updateServiceProvider error:", error);
+        return res.status(500).json({ error: "No se pudo actualizar el proveedor" });
+    }
+};*/
