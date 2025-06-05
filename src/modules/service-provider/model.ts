@@ -1,0 +1,85 @@
+import mongoose, { Schema } from "mongoose";
+import { IServiceProvider } from "./types";
+import { generateSlug } from "./utils";
+
+const ServiceProviderSchema = new Schema<IServiceProvider>(
+    {
+        userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        slug: { type: String, required: true, unique: true },
+        enterpriseName: { type: String, required: true },
+        serviceCategories: [{ type: String, required: true }],
+        phone: { type: String, required: true },
+        whatsapp: { type: String, required: true },
+        email: { type: String, required: true },
+        status: {
+            type: String,
+            enum: ['active', 'inactive', 'deleted'],
+            default: 'active'
+        },
+        location: { type: String, required: true },
+        coverage: {
+            maxDistance: { type: Number, required: true },
+            cities: [{ type: String, required: true }],
+        },
+        services: [{ type: String, required: true }],
+        aboutMe: { type: String, required: true },
+        canChangeEnterpriseName: {
+            type: Boolean,
+            default: true,
+        },
+        lastNameChange: Date,
+        slugHistory: [
+            {
+                slug: { type: String, required: true },
+                changedAt: { type: Date, default: Date.now }
+            }
+        ]
+    },
+    {
+        timestamps: true,
+        toJSON: { virtuals: true },
+    }
+);
+
+// Generador automático de slug si no se envía
+ServiceProviderSchema.pre("validate", async function (next) {
+    if (!this.slug && this.enterpriseName) {
+        this.slug = await generateSlug(this.enterpriseName);
+    }
+    next();
+});
+
+ServiceProviderSchema.pre('save', async function (next) {
+    if (this.isModified('enterpriseName')) {
+        // Validar período mínimo
+        if (!this.canChangeEnterpriseName) {
+            throw new Error('Deben pasar 2 meses entre cambios de nombre');
+        }
+
+        // Generar nuevo slug
+        const newSlug = await generateSlug(this.enterpriseName);
+        this.slugHistory.push({ slug: this.slug, changedAt: new Date() });
+        this.slug = newSlug;
+        this.lastNameChange = new Date();
+    }
+    next();
+});
+
+ServiceProviderSchema.pre('save', function (next) {
+    if (this.isModified('enterpriseName')) {
+        this.lastNameChange = new Date();
+    }
+    next();
+});
+
+ServiceProviderSchema.methods.softDelete = async function () {
+    this.status = "inactive";
+    await this.save();
+
+    // Borrar imágenes en segundo plano
+    //deleteImages(this.userId).catch(console.error);
+};
+
+
+export default mongoose.model<IServiceProvider>("ServiceProvider", ServiceProviderSchema);
+

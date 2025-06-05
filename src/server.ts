@@ -1,11 +1,11 @@
 import express from "express"
-import authRoutes from './routes/authRoutes'
-import userRoutes from './routes/userRoutes'
-import serviceProviderRoutes from './routes/serviceProviderRoutes'
+import authRoutes from '@modules/auth/routes'
+import userRoutes from '@modules/user/routes'
+import serviceProviderRoutes from '@modules/service-provider/routes'
 import cors from "cors"
-import corsOptions from "./config/cors.config"
+import corsOptions from "@shared/config/cors.config"
 import dotenv from 'dotenv'
-import connectDB from "./config/db.config"
+import connectDB from "@shared/config/db.config"
 import cookieParser from "cookie-parser";
 
 dotenv.config()
