@@ -21,6 +21,9 @@ export const processImages = async (req: Request, _res: Response, next: NextFunc
         // Mejor forma de manejar req.files
         const files = req.files as { [fieldname: string]: Express.Multer.File[] } || {};
 
+        // ─── UPLOADS TO DELETE IF FALL ───────────────────────────────
+        const uploadsToRollback: string[] = [];
+
         // ─── LOGO ────────────────────────────────────────────────────
         let newLogo = null;
 
@@ -30,6 +33,9 @@ export const processImages = async (req: Request, _res: Response, next: NextFunc
                 files['logoFile'][0].buffer,
                 CLOUDINARY_PATHS.LOGOS
             );
+            if (newLogo && newLogo.public_id) {
+                uploadsToRollback.push(newLogo.public_id)
+            }
         }
 
 
@@ -44,13 +50,19 @@ export const processImages = async (req: Request, _res: Response, next: NextFunc
                 )
             );
             newGallery.push(...newGalleryImages);
+            if (newGallery && newGallery.length > 0) {
+                uploadsToRollback.push(...newGallery.map(img => img?.public_id));
+            }
         }
+
+
 
         // ─── ACTUALIZAR RE.BODY ──────────────────────────────────
         req.body = {
             ...req.body,
             newLogo,
-            newGallery
+            newGallery,
+            uploadsToRollback, // Añadimos los public_ids para posibles eliminaciones
         };
 
         console.log('Procesamiento de imágenes completado', newGallery, newLogo); // Debug 3

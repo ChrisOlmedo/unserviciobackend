@@ -29,8 +29,16 @@ const ImageSchema = new Schema<IImage>({
                 ret.id = ret._id.toString(); // convierte _id a id
                 delete ret._id;              // elimina _id original
             },
-        }
+        },
+        toObject: {
+            virtuals: true,
+            versionKey: false,
+            transform: (_, ret) => {
+                ret.id = ret._id.toString();
+                delete ret._id;
+            }
 
+        }
     }
 );
 

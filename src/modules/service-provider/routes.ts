@@ -15,7 +15,7 @@ import { parseServiceProviderData } from "./middleware/parseServiceProviderData"
 const router = Express.Router()
 
 // Rutas públicas
-router.get('/public/', getAllServiceProviders);
+router.get('/public/service/all', getAllServiceProviders);
 router.get('/public/:slug', getPublicServiceProvider);
 
 // Rutas protegidas que requieren autenticación

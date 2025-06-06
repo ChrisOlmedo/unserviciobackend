@@ -39,7 +39,7 @@ export async function saveLogo(
         serviceProviderId: serviceProviderId,
         userId: userId
     }], { session });
-    return logoDoc[0].toObject();
+    return logoDoc[0];
 }
 
 export async function deleteImages(galleryIds: string[]): Promise<void> {

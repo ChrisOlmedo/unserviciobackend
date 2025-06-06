@@ -6,6 +6,7 @@ const ServiceProviderSchema = new Schema<IServiceProvider>(
     {
         userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
         slug: { type: String, required: true, unique: true },
+        logo: { type: Schema.Types.ObjectId, ref: "Image", required: true },
         enterpriseName: { type: String, required: true },
         serviceCategories: [{ type: String, required: true }],
         phone: { type: String, required: true },
@@ -23,11 +24,8 @@ const ServiceProviderSchema = new Schema<IServiceProvider>(
         },
         services: [{ type: String, required: true }],
         aboutMe: { type: String, required: true },
-        canChangeEnterpriseName: {
-            type: Boolean,
-            default: true,
-        },
-        lastNameChange: Date,
+        gallery: [{ type: Schema.Types.ObjectId, ref: "Image" }],
+        lastEnterpriseNameChange: Date,
         slugHistory: [
             {
                 slug: { type: String, required: true },
@@ -38,6 +36,7 @@ const ServiceProviderSchema = new Schema<IServiceProvider>(
     {
         timestamps: true,
         toJSON: { virtuals: true },
+        toObject: { virtuals: true }
     }
 );
 
@@ -50,24 +49,20 @@ ServiceProviderSchema.pre("validate", async function (next) {
 });
 
 ServiceProviderSchema.pre('save', async function (next) {
+
+    if (this.isNew) return next();
     if (this.isModified('enterpriseName')) {
         // Validar período mínimo
-        if (!this.canChangeEnterpriseName) {
-            throw new Error('Deben pasar 2 meses entre cambios de nombre');
+
+        if (this.canChangeEnterpriseName()) {
+            return next(new Error('Deben pasar 2 meses entre cambios de nombre'));
         }
 
         // Generar nuevo slug
         const newSlug = await generateSlug(this.enterpriseName);
         this.slugHistory.push({ slug: this.slug, changedAt: new Date() });
         this.slug = newSlug;
-        this.lastNameChange = new Date();
-    }
-    next();
-});
-
-ServiceProviderSchema.pre('save', function (next) {
-    if (this.isModified('enterpriseName')) {
-        this.lastNameChange = new Date();
+        this.lastEnterpriseNameChange = new Date();
     }
     next();
 });
@@ -79,6 +74,18 @@ ServiceProviderSchema.methods.softDelete = async function () {
     // Borrar imágenes en segundo plano
     //deleteImages(this.userId).catch(console.error);
 };
+
+/* --------------  función reutilizable dentro del esquema -------------- */
+ServiceProviderSchema.methods.canChangeEnterpriseName = function (): boolean {
+    if (!this.lastEnterpriseNameChange) return true;
+    const diffDays = (Date.now() - this.lastEnterpriseNameChange.getTime()) / 86_400_000;
+    return diffDays >= 60;
+};
+
+ServiceProviderSchema.virtual('canEditEnterpriseName').get(function (this: IServiceProvider) {
+    return this.canChangeEnterpriseName();
+});
+
 
 
 export default mongoose.model<IServiceProvider>("ServiceProvider", ServiceProviderSchema);

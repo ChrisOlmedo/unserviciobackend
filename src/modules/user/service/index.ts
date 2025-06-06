@@ -12,10 +12,9 @@ export async function getUser(filter: Record<string, any>) {
     return await User.findOne(filter);
 }
 
-export async function updateRoletoServiceProvider(
+export async function updateRoleToServiceProvider(
     userId: string | Types.ObjectId,
-    session?: ClientSession | null
-) {
+    session?: ClientSession | null) {
     return User.findByIdAndUpdate(
         userId,
         { role: "service-provider" },

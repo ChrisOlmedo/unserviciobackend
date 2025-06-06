@@ -1,9 +1,18 @@
 import { IImage } from '@shared/types';
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 
-export interface IServiceProvider extends Document {
-    _id: mongoose.Types.ObjectId; // MongoDB ObjectId
-    userId: mongoose.Types.ObjectId;
+
+// ========== Start Base Interfaces ==========
+
+export interface UserRef { userId: mongoose.Types.ObjectId; }
+
+// ========== Media Interfaces ==========
+export interface ServiceProviderMedia {
+    logo: IImage;
+    gallery: IImage[];
+}
+
+export interface ServiceProviderBase {
     slug: string;
     enterpriseName: string;
     serviceCategories: string[];
@@ -18,15 +27,31 @@ export interface IServiceProvider extends Document {
     };
     services: string[];
     aboutMe: string;
-    lastNameChange?: Date;
-    canChangeEnterpriseName: boolean;
+}
+// ========== End Base Interfaces ==========
+
+
+// ========== Mongoose Schema Interface ==========
+export interface IServiceProvider extends ServiceProviderBase, UserRef, Document {
+    logo: mongoose.Types.ObjectId; // Reference to IImage
+    gallery: mongoose.Types.ObjectId[]; // References to IImage
+    _id: mongoose.Types.ObjectId;
+    canChangeEnterpriseName(): boolean;
+    lastEnterpriseNameChange?: Date;
     slugHistory: {
         slug: string;
         changedAt: Date;
     }[];
 }
 
-export interface ServiceProviderData extends IServiceProvider {
-    logo: IImage;
-    gallery: IImage[];
+
+// ========== Request Interface ==========
+
+export interface ServiceProviderRequest extends ServiceProviderBase, ServiceProviderMedia, UserRef {
+    newLogo: IImage;
+    newGallery: IImage[];
+    deletedImages: Types.ObjectId[];
 }
+
+// ========== Response Interfaces ==========
+export interface ServiceProviderData extends ServiceProviderBase, ServiceProviderMedia { }
