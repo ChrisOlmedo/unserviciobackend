@@ -14,9 +14,7 @@ export default async function createNewServiceProvider(data: ServiceProviderRequ
     const serviceProviderId = new Types.ObjectId();
     const session = await mongoose.startSession();
     session.startTransaction();
-
     try {
-
         // 1. Manejo de imágenes (logo + galería)
         const { logo, gallery } = await createMedia(
             data.newLogo,

@@ -22,6 +22,17 @@ export async function updateRoleToServiceProvider(
     );
 }
 
+export async function changeRoleToUser(
+    userId: string | Types.ObjectId,
+    session?: ClientSession | null) {
+    return User.findByIdAndUpdate(
+        userId,
+        { role: "user" },
+        { new: true, session } // ← ¡Mantiene la transacción!
+    );
+}
+
+
 /*
 export async function getUserById(userId: string) {
     return await User.findById(userId).select("-_id -__v");

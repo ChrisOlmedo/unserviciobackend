@@ -1,6 +1,7 @@
 import Image from "@shared/models/image.model"
 import { IImage } from "@shared/types";
 import { Types, ClientSession } from "mongoose";
+import { deleteFromCloudinary } from "./cloudinary.service";
 
 /**
  * @module ImageService
@@ -140,8 +141,14 @@ export async function updateMedia(
         gallery: currentGallery // Combinar nuevas + existentes
     };
 }
-/*
-export async function getImageByServiceProviderId(imageId: Types.ObjectId): Promise<IImage | null> {
-    return await Image.findById(imageId).lean();
-}
-    */
+export const deleteImagesByUserId = async (userId: Types.ObjectId, session?: ClientSession) => {
+    const images = await Image.find({ userId }).session(session || null);
+    const publicIds = images.map(img => img.public_id).filter(Boolean);
+
+    // Borra de Cloudinary
+    await Promise.all(
+        publicIds.map(public_id => deleteFromCloudinary(public_id))
+    )
+    // Borra de base de datos
+    await Image.deleteMany({ userId }).session(session || null);
+};

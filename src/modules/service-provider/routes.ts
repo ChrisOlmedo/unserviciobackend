@@ -4,7 +4,8 @@ import {
     createNewServiceProvider,
     getAllServiceProviders,
     getMyServiceProvider,
-    updateServiceProviderController
+    updateServiceProviderController,
+    deleteServiceProviderController
 } from './controller';
 import { authenticateToken } from '@shared/middleware/authenticateToken';
 import { processImages } from '@shared/middleware/processImages';
@@ -44,7 +45,7 @@ router.put('/me',
     updateServiceProviderController
 );
 
-router.delete('/me', authenticateToken);
+router.delete('/me', authenticateToken, deleteServiceProviderController);
 
 
 export default router;

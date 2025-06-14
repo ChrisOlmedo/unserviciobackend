@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getServiceProviderBySlug, getServiceProviders, getServiceProviderByUserId } from '../service';
+import { getServiceProviderBySlug, getServiceProviders, getServiceProviderByUserId, deleteServiceProvider } from '../service';
 import registerServiceProvider from '../service/create.service';
 import updateServiceProvider from '../service/update.service';
 import { deleteFromCloudinary } from '@shared/services/cloudinary.service';
@@ -21,15 +21,6 @@ export const getPublicServiceProvider = async (req: Request, res: Response) => {
         console.error('Error al obtener proveedor por ID:', error);
         res.status(500).json({ message: 'Error al obtener proveedor por ID' });
     }
-
-    /*
-    const { slug } = req.params;
-  const provider = await ServiceProvider.findOne({ slug });
-  if (provider) return next();              // slug actual → sigue
-  const alias = await ServiceProvider.findOne({ slugHistory: slug });
-  if (!alias) return res.status(404).send('Not found');
-  return res.redirect(301, `/services/${alias.slug}`);
-    */
 }
 
 export const getMyServiceProvider = async (req: Request, res: Response) => {
@@ -92,3 +83,16 @@ export const updateServiceProviderController = async (req: Request, res: Respons
         res.status(500).json({ error: "No se pudo actualizar el proveedor" });
     }
 };
+
+export const deleteServiceProviderController = async (req: Request, res: Response) => {
+    const userId = (req as any).userId;
+    try {
+        await deleteServiceProvider(userId);
+        console.log("Proveedir eliminado")
+        res.status(200);
+    } catch (error) {
+        console.error(error);
+        res.status(500);
+    }
+
+}

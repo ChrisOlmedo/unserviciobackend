@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { IServiceProvider } from "./types";
-import { generateSlug } from "./utils";
+import { generateUniqueSlug } from "./utils";
 
 const ServiceProviderSchema = new Schema<IServiceProvider>(
     {
@@ -43,13 +43,12 @@ const ServiceProviderSchema = new Schema<IServiceProvider>(
 // Generador automático de slug si no se envía
 ServiceProviderSchema.pre("validate", async function (next) {
     if (!this.slug && this.enterpriseName) {
-        this.slug = await generateSlug(this.enterpriseName);
+        this.slug = await generateUniqueSlug(this.enterpriseName);
     }
     next();
 });
 
 ServiceProviderSchema.pre('save', async function (next) {
-
     if (this.isNew) return next();
     if (this.isModified('enterpriseName')) {
         // Validar período mínimo
@@ -59,7 +58,7 @@ ServiceProviderSchema.pre('save', async function (next) {
         }
 
         // Generar nuevo slug
-        const newSlug = await generateSlug(this.enterpriseName);
+        const newSlug = await generateUniqueSlug(this.enterpriseName);
         this.slugHistory.push({ slug: this.slug, changedAt: new Date() });
         this.slug = newSlug;
         this.lastEnterpriseNameChange = new Date();
@@ -67,14 +66,13 @@ ServiceProviderSchema.pre('save', async function (next) {
     next();
 });
 
+/*
 ServiceProviderSchema.methods.softDelete = async function () {
     this.status = "inactive";
     await this.save();
-
-    // Borrar imágenes en segundo plano
-    //deleteImages(this.userId).catch(console.error);
+    deleteImages(this.userId).catch(console.error);
 };
-
+*/
 /* --------------  función reutilizable dentro del esquema -------------- */
 ServiceProviderSchema.methods.canChangeEnterpriseName = function (): boolean {
     if (!this.lastEnterpriseNameChange) return true;

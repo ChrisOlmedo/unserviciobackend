@@ -1,8 +1,9 @@
 import ServiceProvider from '../model';
 import { Types } from 'mongoose';
-import ImageModel from '@shared/models/image.model';
+import { deleteImagesByUserId } from '@shared/services/image.service';
 import mongoose from 'mongoose';
 import { ServiceProviderData } from '@shared/types';
+import { changeRoleToUser } from '@modules/user/service';
 
 export async function getServiceProviderBySlug(slug: string):
     Promise<ServiceProviderData | null> {
@@ -46,8 +47,16 @@ export const deleteServiceProvider = async (userId: Types.ObjectId) => {
     const session = await mongoose.startSession();
     try {
         session.startTransaction();
-        await ImageModel.deleteMany({ userId }).session(session);
+
+        // 1. Eliminar imágenes (desde el service de imágenes)
+        await deleteImagesByUserId(userId, session);
+
+        // 2. Eliminar perfil del proveedor
         await ServiceProvider.findOneAndDelete({ userId }, { session });
+
+        // 3. Remover rol de proveedor
+        await changeRoleToUser(userId, session);
+
         await session.commitTransaction();
     } catch (error) {
         await session.abortTransaction();
